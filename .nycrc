@@ -1,0 +1,15 @@
+{
+  "extends": "@istanbuljs/nyc-config-typescript",
+  "check_coverage": true,
+  "branches": 100,
+  "statements": 100,
+  "lines": 100,
+  "per_file": true,
+  "all": true,
+  "sourceMap": true,
+  "instrument": true,
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist", "**/*.d.ts", "**/*.test.ts", "**/__mocks__", "coverage", ".nyc_output", "src/utils/logger.ts", "src/index.ts"],
+  "require": ["ts-node/register", "source-map-support/register"],
+  "reporter": ["lcov", "text-summary", "text"]
+}

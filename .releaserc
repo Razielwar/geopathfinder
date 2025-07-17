@@ -1,0 +1,39 @@
+{
+  "branches": ["dev"],
+  "tagFormat": "${version}",
+  "plugins": [
+    [
+      "@semantic-release/commit-analyzer",
+      {
+        "preset": "eslint"
+      }
+    ],
+    [
+      "@semantic-release/release-notes-generator", 
+      {
+        "preset": "eslint",
+        "writerOpts": {
+          "commitsSort": ["subject", "scope"]
+        }
+      }
+    ],
+    [
+      "@semantic-release/npm", 
+      {
+        "npmPublish": false
+      }
+    ],
+    [
+      "@semantic-release/changelog",
+      {
+        "changelogFile": "CHANGELOG.md"
+      }
+    ],
+    [
+      "@semantic-release/git",
+      {
+        "assets": ["CHANGELOG.md", "package.json", "yarn.lock"]
+      }
+    ]
+  ]
+}

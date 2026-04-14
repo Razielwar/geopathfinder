@@ -1,7 +1,7 @@
 import { expect, describe, it } from '@jest/globals';
 
 import * as turf from '@turf/turf';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash.clonedeep';
 import {
   edgeIntersect,
   haversineDistance,

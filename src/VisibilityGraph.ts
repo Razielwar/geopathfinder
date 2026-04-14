@@ -22,28 +22,28 @@ function isPolygon(feature: Feature<Polygon | MultiPolygon>): feature is Feature
  */
 function waitNextEventloopCycle() {
   return new Promise<void>((resolve) => {
-    setImmediate(() => resolve());
+    setTimeout(() => resolve(), 0);
   });
 }
 
 export class VisibilityGraph {
-  private readonly startPoint: NodePoint;
-  private readonly nbTargets: number;
-  private points: NodePoint[] = [];
-  private edges: Edge[] = [];
+  private readonly _startPoint: NodePoint;
+  private readonly _nbTargets: number;
+  private _points: NodePoint[] = [];
+  private _edges: Edge[] = [];
 
   // TODO see how to manage point around longitude -180/180 and latitude around -90/90
 
-  constructor(start: Feature<Point>, restrictedAreas: Feature<Polygon | MultiPolygon>[], targets: Feature<Point>[]) {
+  public constructor(start: Feature<Point>, restrictedAreas: Feature<Polygon | MultiPolygon>[], targets: Feature<Point>[]) {
     // TODO: remove targeted points not reachable = points on restricted areas => can be done in caller to avoid doing it multiple times
     // add target points to array of points
     targets.forEach((target) => {
-      this.createPoint(target.geometry.coordinates, true);
+      this._createPoint(target.geometry.coordinates, true);
     });
-    this.nbTargets = targets.length;
+    this._nbTargets = targets.length;
 
     // add start point to array of points
-    this.startPoint = this.createPoint(start.geometry.coordinates);
+    this._startPoint = this._createPoint(start.geometry.coordinates);
 
     // TODO see how to manage inner polygons (polygons made of external and internal definition)
     // flatten coords of all polygons
@@ -56,25 +56,25 @@ export class VisibilityGraph {
 
     // extract edges and points from restrictedAreas
     for (const polygonCoord of polygonCoords) {
-      const firstPoint = this.createPoint(polygonCoord[0]!);
+      const firstPoint = this._createPoint(polygonCoord[0]!);
       let prevPoint = firstPoint;
       // do not iterate to the last point as it is equal to the first point
       for (let ii = 1; ii < polygonCoord.length - 1; ii++) {
-        const currentPoint = this.createPoint(polygonCoord[ii]!);
-        this.createEdge(prevPoint, currentPoint);
+        const currentPoint = this._createPoint(polygonCoord[ii]!);
+        this._createEdge(prevPoint, currentPoint);
         prevPoint = currentPoint;
       }
 
       // save closing edge: assumption in geojson first point is equal to last point
-      this.createEdge(prevPoint, firstPoint);
+      this._createEdge(prevPoint, firstPoint);
     }
 
     // Detect all concave points to avoid linking them, this is an optimisation of the visibility graph
     // to limit the number of points as they are useless
-    this.points.forEach((point) => point.computeConcave());
+    this._points.forEach((point) => point.computeConcave());
 
     console.info(
-      `visibilityGraph nbEdges=${this.edges.length} nbPoints=${this.points.length} nbConcave=${this.points.filter((p) => p.isConcave).length}`
+      `visibilityGraph nbEdges=${this._edges.length} nbPoints=${this._points.length} nbConcave=${this._points.filter((p) => p.isConcave).length}`
     );
   }
 
@@ -88,7 +88,7 @@ export class VisibilityGraph {
    *  but it means we have to know the length in advance as this quicker solution does not allow capacity growing
    * @param distanceMax
    */
-  async searchDijkstra(distanceMax: number): Promise<number[][]> {
+  public async searchDijkstra(distanceMax: number): Promise<number[][]> {
     // init
     const distanceMap: number[] = [];
     const predecessors: number[] = [];
@@ -98,8 +98,8 @@ export class VisibilityGraph {
     let nbIteration = 0;
 
     // add start point in priorityQueue and set its distance to 0.0
-    distanceMap[this.startPoint.id] = 0;
-    unvisitedNodes.push(this.startPoint.id, 0);
+    distanceMap[this._startPoint.id] = 0;
+    unvisitedNodes.push(this._startPoint.id, 0);
 
     while (unvisitedNodes.length > 0) {
       const currentPointId = unvisitedNodes.pop()!;
@@ -111,7 +111,6 @@ export class VisibilityGraph {
       // nota : use module === 1 instand of 0 to ensure at each new search process is yield. These ensure that even
       // if we have a chain of search with less than 10 iteration process is yield regulary.
       if (nbIteration % 10 === 1) {
-        // eslint-disable-next-line no-await-in-loop
         await waitNextEventloopCycle(); // contingency processing should be sequentially so await in loop is ok
       }
 
@@ -121,21 +120,21 @@ export class VisibilityGraph {
         visitedNodes[currentPointId] = true;
 
         // exit if target found
-        if (this.points[currentPointId]!.isTarget) {
+        if (this._points[currentPointId]!.isTarget) {
           targetFound = currentPointId;
           break;
         }
 
         // get all children of the current point => only visible ones not already visited
-        const children = this.processPointChildren(currentPointId, visitedNodes);
-        this.searchDijkstraChildren(children, distanceMax, distanceMap, predecessors, currentPointId, unvisitedNodes);
+        const children = this._processPointChildren(currentPointId, visitedNodes);
+        this._searchDijkstraChildren(children, distanceMax, distanceMap, predecessors, currentPointId, unvisitedNodes);
       }
     }
     console.info(`search end at iteration ${nbIteration}`);
-    return this.buildPath(targetFound, predecessors);
+    return this._buildPath(targetFound, predecessors);
   }
 
-  private searchDijkstraChildren(
+  private _searchDijkstraChildren(
     children: NodePoint[],
     distanceMax: number,
     distanceMap: number[],
@@ -143,15 +142,14 @@ export class VisibilityGraph {
     currentPointId: number,
     unvisitedNodes: FlatQueue<number>
   ) {
-    const currentPoint = this.points[currentPointId]!;
+    const currentPoint = this._points[currentPointId]!;
     const currentDistance = distanceMap[currentPointId]!;
     for (const childPoint of children) {
       const distance = currentDistance + haversineDistance(currentPoint, childPoint);
       // update distance and add the node to the queue if distance does not already exist or if a shorter path has been found
       if (distance <= distanceMax && (distanceMap[childPoint.id] === undefined || distanceMap[childPoint.id]! > distance)) {
-        // eslint-disable-next-line no-param-reassign
         distanceMap[childPoint.id] = distance;
-        // eslint-disable-next-line no-param-reassign
+
         predecessors[childPoint.id] = currentPointId; // used to retrieve the path at the end
         unvisitedNodes.push(childPoint.id, distance);
       }
@@ -167,7 +165,7 @@ export class VisibilityGraph {
    *  but it means we have to know the length in advance as this quicker solution does not allow capacity growing
    * @param distanceMax
    */
-  async searchAStar(distanceMax: number): Promise<number[][]> {
+  public async searchAStar(distanceMax: number): Promise<number[][]> {
     // init
     const distanceMap: number[] = [];
     const heuristicMap: number[] = [];
@@ -178,8 +176,8 @@ export class VisibilityGraph {
     let nbIteration = 0;
 
     // add start point in priorityQueue and set its distance to 0.0
-    distanceMap[this.startPoint.id] = 0;
-    unvisitedNodes.push(this.startPoint.id, 0);
+    distanceMap[this._startPoint.id] = 0;
+    unvisitedNodes.push(this._startPoint.id, 0);
 
     while (unvisitedNodes.length > 0) {
       const currentPointId = unvisitedNodes.pop()!;
@@ -191,7 +189,6 @@ export class VisibilityGraph {
       // nota : use module === 1 instand of 0 to ensure at each new search process is yield. These ensure that even
       // if we have a chain of search with less than 10 iteration process is yield regulary.
       if (nbIteration % 10 === 1) {
-        // eslint-disable-next-line no-await-in-loop
         await waitNextEventloopCycle(); // contingency processing should be sequentially so await in loop is ok
       }
 
@@ -201,21 +198,21 @@ export class VisibilityGraph {
         visitedNodes[currentPointId] = true;
 
         // exit if target found
-        if (this.points[currentPointId]!.isTarget) {
+        if (this._points[currentPointId]!.isTarget) {
           targetFound = currentPointId;
           break;
         }
 
         // get all children of the current point => only visible ones not already visited
-        const children = this.processPointChildren(currentPointId, visitedNodes);
-        this.processAStarChildren(distanceMap, heuristicMap, predecessors, unvisitedNodes, currentPointId, children, distanceMax);
+        const children = this._processPointChildren(currentPointId, visitedNodes);
+        this._processAStarChildren(distanceMap, heuristicMap, predecessors, unvisitedNodes, currentPointId, children, distanceMax);
       }
     }
     console.info(`search end at iteration ${nbIteration}`);
-    return this.buildPath(targetFound, predecessors);
+    return this._buildPath(targetFound, predecessors);
   }
 
-  private processAStarChildren(
+  private _processAStarChildren(
     distanceMap: number[],
     heuristicMap: number[],
     predecessors: number[],
@@ -224,22 +221,20 @@ export class VisibilityGraph {
     children: NodePoint[],
     distanceMax: number
   ) {
-    const currentPoint = this.points[currentPointId]!;
+    const currentPoint = this._points[currentPointId]!;
     const currentDistance = distanceMap[currentPointId]!;
 
     for (const childPoint of children) {
       const distance = currentDistance + haversineDistance(currentPoint, childPoint);
       // update distance and add the node to the queue if distance does not already exist or if a shorter path has been found
       if (distance <= distanceMax && (distanceMap[childPoint.id] === undefined || distanceMap[childPoint.id]! > distance)) {
-        // eslint-disable-next-line no-param-reassign
         distanceMap[childPoint.id] = distance;
 
         // compute heuristic : min distance to nearest target
-        const childHeuristic = this.computeAStarHeuristic(heuristicMap, childPoint);
+        const childHeuristic = this._computeAStarHeuristic(heuristicMap, childPoint);
         const estimatedMinDist = distance + childHeuristic;
         // do not consider point if estimated distance is greater than distanceMax
         if (estimatedMinDist <= distanceMax) {
-          // eslint-disable-next-line no-param-reassign
           predecessors[childPoint.id] = currentPointId; // used to retrieve the path at the end
           unvisitedNodes.push(childPoint.id, estimatedMinDist);
         }
@@ -247,35 +242,35 @@ export class VisibilityGraph {
     }
   }
 
-  private computeAStarHeuristic(heuristicMap: number[], childPoint: NodePoint) {
+  private _computeAStarHeuristic(heuristicMap: number[], childPoint: NodePoint) {
     let childHeuristic = heuristicMap[childPoint.id];
     if (childHeuristic === undefined) {
       if (childPoint.isTarget) {
         childHeuristic = 0;
       } else {
         childHeuristic = Number.MAX_VALUE;
-        for (let targetIndex = 0; targetIndex < this.nbTargets; targetIndex++) {
-          const targetPoint = this.points[targetIndex]!;
+        for (let targetIndex = 0; targetIndex < this._nbTargets; targetIndex++) {
+          const targetPoint = this._points[targetIndex]!;
           const distToTarget = haversineDistance(childPoint, targetPoint);
           if (distToTarget < childHeuristic) {
             childHeuristic = distToTarget;
           }
         }
       }
-      // eslint-disable-next-line no-param-reassign
+
       heuristicMap[childPoint.id] = childHeuristic;
     }
     return childHeuristic;
   }
 
-  private buildPath(targetFound: number | undefined, predecessors: number[]): number[][] {
-    const path = [];
+  private _buildPath(targetFound: number | undefined, predecessors: number[]): number[][] {
+    const path: number[][] = [];
     if (targetFound !== undefined) {
-      path.push(this.points[targetFound]!.toCoords());
+      path.push(this._points[targetFound]!.toCoords());
       let currentNode = targetFound;
       while (predecessors[currentNode] !== undefined) {
         currentNode = predecessors[currentNode]!;
-        path.push(this.points[currentNode]!.toCoords());
+        path.push(this._points[currentNode]!.toCoords());
       }
     }
     return path.reverse();
@@ -287,17 +282,17 @@ export class VisibilityGraph {
    * @param visited
    * @private
    */
-  private processPointChildren(pointId: number, visited: boolean[]): NodePoint[] {
+  private _processPointChildren(pointId: number, visited: boolean[]): NodePoint[] {
     const children: NodePoint[] = [];
-    const fromPoint = this.points[pointId]!;
-    for (let id = 0; id < this.points.length; id++) {
-      const toPoint = this.points[id]!;
+    const fromPoint = this._points[pointId]!;
+    for (let id = 0; id < this._points.length; id++) {
+      const toPoint = this._points[id]!;
       if (!toPoint.isConcave && !visited[id]) {
         // we first verify if each side of the edge do not cross a polygon by looking if the line is tangent to the polygon
         if (areTangent(fromPoint, toPoint)) {
           // check if point is visible by looking for intersections
           // TODO Optimisation: implements Lee's O(n² log n) algorithm https://github.com/davetcoleman/visibility_graph/blob/master/Visibility_Graph_Algorithm.pdf
-          if (!this.checkIfPointIsVisibleWithIntersections(fromPoint, toPoint)) {
+          if (!this._checkIfPointIsVisibleWithIntersections(fromPoint, toPoint)) {
             children.push(toPoint);
           }
         }
@@ -307,9 +302,9 @@ export class VisibilityGraph {
     return children;
   }
 
-  private checkIfPointIsVisibleWithIntersections(fromPoint: NodePoint, toPoint: NodePoint) {
+  private _checkIfPointIsVisibleWithIntersections(fromPoint: NodePoint, toPoint: NodePoint) {
     let hasIntersection = false;
-    for (const edge of this.edges) {
+    for (const edge of this._edges) {
       // ignore edge containing fromPoint or toPoint otherwise we will always have intersections
       if (!edge.containsPoint(fromPoint) && !edge.containsPoint(toPoint)) {
         if (edgeIntersect(fromPoint, toPoint, edge.p1, edge.p2)) {
@@ -321,19 +316,17 @@ export class VisibilityGraph {
     return hasIntersection;
   }
 
-  private createPoint(coords: number[], isTarget = false): NodePoint {
-    const nodeId = this.points.length;
+  private _createPoint(coords: number[], isTarget = false): NodePoint {
+    const nodeId = this._points.length;
     const point = new NodePoint(coords, nodeId, isTarget);
-    this.points.push(point);
+    this._points.push(point);
 
     return point;
   }
 
-  private createEdge(p1: NodePoint, p2: NodePoint) {
-    // eslint-disable-next-line no-param-reassign
+  private _createEdge(p1: NodePoint, p2: NodePoint) {
     p1.nextPoint = p2;
-    // eslint-disable-next-line no-param-reassign
     p2.prevPoint = p1;
-    this.edges.push(new Edge(p1, p2));
+    this._edges.push(new Edge(p1, p2));
   }
 }

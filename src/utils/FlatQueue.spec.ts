@@ -46,17 +46,17 @@ describe('flatqueue error', () => {
 
     while (queue.length) queue.pop();
 
-    // @ts-ignore
-    expect(queue.ids.length).toEqual(10);
-    // @ts-ignore
-    expect(queue.values.length).toEqual(10);
+    // @ts-expect-error access private members
+    expect(queue._ids.length).toEqual(10);
+    // @ts-expect-error access private members
+    expect(queue._values.length).toEqual(10);
 
     queue.shrink();
 
-    // @ts-ignore
-    expect(queue.ids.length).toEqual(0);
-    // @ts-ignore
-    expect(queue.values.length).toEqual(0);
+    // @ts-expect-error access private members
+    expect(queue._ids.length).toEqual(0);
+    // @ts-expect-error access private members
+    expect(queue._values.length).toEqual(0);
   });
 
   it('clear reset length to 0', () => {

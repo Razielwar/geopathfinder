@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
     "target": "esnext",
-    "module": "commonjs",
     "moduleResolution": "bundler",
-    "types": ["jest", "node"],
-    "outDir": "dist-test",
     "strict": true,
     "noImplicitReturns": true,
     "noUncheckedIndexedAccess": true,
@@ -18,9 +14,6 @@
     "skipLibCheck": true,
     "allowJs": true
   },
-  "include": ["src/**/*.d.ts", "src/**/*.test.*", "test/**/*", "profile/**/*", "profile/**/*"],
-  "exclude": ["node_modules"],
-  "ts-node": {
-    "files": true
-  }
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/__mocks__/*", "src/**/*.spec.ts"]
 }

@@ -1,5 +1,5 @@
 import type { FeatureCollection } from 'geojson';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 
 export function loadFeatureCollection(geojsonFilePath: string): FeatureCollection {
   // Read the contents of the file into a string

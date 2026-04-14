@@ -1,4 +1,4 @@
-import type {Config} from 'jest';
+import type { Config } from 'jest';
 
 export default {
   testTimeout: 15000,
@@ -6,9 +6,10 @@ export default {
   moduleFileExtensions: ['js', 'json', 'ts'],
   testRegex: ['.*\\.spec\\.ts$'],
   transform: {
-    '^.+\\.(t|j)s$': 'ts-jest',
+    '^.+\\.(t|j)s$': ['ts-jest', { tsconfig: 'tsconfig.test.json' }],
   },
-  collectCoverageFrom: ['src/**/*.(t|j)s'],
+  transformIgnorePatterns: ['node_modules/(?!(@turf|kdbush|geokdbush|tinyqueue)/)'],
+  collectCoverageFrom: ['src/**/*.(t|j)s', '!src/index.ts'],
   coverageDirectory: './coverage',
   coverageReporters: ['lcov', 'text'],
   coverageThreshold: {

@@ -1,11 +1,37 @@
 {
-  "branches": ["dev"],
+  "branches": ["main"],
   "tagFormat": "${version}",
   "plugins": [
     [
       "@semantic-release/commit-analyzer",
       {
-        "preset": "eslint"
+        "preset": "eslint",
+        "releaseRules": [
+          {
+            "tag": "Breaking",
+            "release": "major"
+          },
+          {
+            "tag": "New",
+            "release": "minor"
+          },
+          {
+            "tag": "Fix",
+            "release": "patch"
+          },
+          {
+            "tag": "Build",
+            "release": "patch"
+          },
+          {
+            "tag": "Chore",
+            "release": "patch"
+          },
+          {
+            "tag": "Upgrade",
+            "release": "patch"
+          }
+        ]
       }
     ],
     [
@@ -20,7 +46,7 @@
     [
       "@semantic-release/npm", 
       {
-        "npmPublish": false
+        "npmPublish": true
       }
     ],
     [
@@ -34,6 +60,7 @@
       {
         "assets": ["CHANGELOG.md", "package.json", "yarn.lock"]
       }
-    ]
+    ],
+    "@semantic-release/github"
   ]
 }

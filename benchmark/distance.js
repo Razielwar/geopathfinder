@@ -1,7 +1,7 @@
 const Benchmark = require('benchmark');
 const turf = require('@turf/turf');
-const { NodePoint } = require('./../dist/contengency/NodePoint');
-const { haversineDistance } = require('./../dist/contengency/geometryUtils');
+const { NodePoint } = require('./../dist/cjs/model/NodePoint');
+const { haversineDistance } = require('./../dist/cjs/utils/geometryUtils');
 
 const LENGTH = 30;
 

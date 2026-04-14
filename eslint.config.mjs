@@ -1,68 +1,49 @@
-import typescriptEslintEslintPlugin from '@typescript-eslint/eslint-plugin';
-import globals from 'globals';
-import tsParser from '@typescript-eslint/parser';
-import path from 'node:path';
-import {fileURLToPath} from 'node:url';
-import js from '@eslint/js';
-import {FlatCompat} from '@eslint/eslintrc';
+// @ts-check
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all,
-});
+import eslint from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import prettierPlugin from 'eslint-plugin-prettier';
+import prettierConfig from 'eslint-config-prettier';
 
-export default [
-    {
-        ignores: ['**/.eslintrc.js', '**/local-env'],
+export default tseslint.config(
+  eslint.configs.recommended,
+  tseslint.configs.recommendedTypeChecked,
+  tseslint.configs.stylisticTypeChecked,
+  {
+    files: ['**/*.ts'],
+    languageOptions: {
+      parserOptions: {
+        project: './tsconfig.eslint.json',
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
-    ...compat.extends(
-      'eslint:recommended',
-      'plugin:@typescript-eslint/recommended',
-      'plugin:prettier/recommended',
-    ),
-    {
-        plugins: {
-            '@typescript-eslint': typescriptEslintEslintPlugin,
-        },
-
-        languageOptions: {
-            globals: {
-                ...globals.node,
-                ...globals.jest,
-            },
-
-            parser: tsParser,
-            ecmaVersion: 5,
-            sourceType: 'module',
-
-            parserOptions: {
-                project: 'tsconfig.json',
-                tsconfigRootDir: '.',
-            },
-        },
-
-        rules: {
-            '@typescript-eslint/explicit-member-accessibility': 'error',
-            '@typescript-eslint/naming-convention': [
-                'error',
-                {
-                    'selector': 'memberLike',
-                    'modifiers': ['public', 'protected'],
-                    'format': ['camelCase'],
-                    'leadingUnderscore': 'forbid',
-                },
-                {
-                    'selector': 'memberLike',
-                    'modifiers': ['private'],
-                    'format': ['camelCase'],
-                    'leadingUnderscore': 'require',
-                },
-            ],
-            '@typescript-eslint/consistent-type-imports': 'error',
-            '@typescript-eslint/no-explicit-any': 'warn',
-        },
+    plugins: {
+      prettier: prettierPlugin,
     },
-];
+    rules: {
+      // Runs Prettier as a lint rule (shows Prettier issues in your editor/CI)
+      'prettier/prettier': 'warn',
+
+      '@typescript-eslint/explicit-member-accessibility': 'error',
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          selector: 'memberLike',
+          modifiers: ['public', 'protected'],
+          format: ['camelCase'],
+          leadingUnderscore: 'forbid',
+        },
+        {
+          selector: 'memberLike',
+          modifiers: ['private'],
+          format: ['camelCase'],
+          leadingUnderscore: 'require',
+        },
+      ],
+      '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
+  },
+  // Prettier integration: disables stylistic rules in conflict with Prettier
+  prettierConfig
+);

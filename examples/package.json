@@ -1,0 +1,15 @@
+{
+  "name": "geopathfinder-examples",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node build.js",
+    "start": "node node-example.js"
+  },
+  "dependencies": {
+    "geopathfinder": "file:../geopathfinder-0.0.1.tgz"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.6"
+  }
+}

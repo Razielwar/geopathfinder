@@ -1,0 +1,22 @@
+name: Setup Node.js with Cache
+
+runs:
+  using: composite
+  steps:
+    - name: Enable Corepack
+      run: corepack enable
+      shell: bash
+
+    - uses: actions/setup-node@v5
+      with:
+        node-version: '24'
+        cache: yarn
+
+    - uses: actions/cache@v5
+      with:
+        path: |
+          node_modules
+          .yarn
+        key: ${{ runner.os }}-node-${{ hashFiles('yarn.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-node-

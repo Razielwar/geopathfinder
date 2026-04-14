@@ -7,7 +7,7 @@ export class NodePoint {
   public nextPoint: NodePoint | null = null;
   public isConcave = false;
 
-  constructor(
+  public constructor(
     coords: number[],
     public readonly id: number,
     public readonly isTarget = false
@@ -16,11 +16,11 @@ export class NodePoint {
     this.y = coords[1]!;
   }
 
-  computeConcave() {
+  public computeConcave() {
     this.isConcave = isConcave(this);
   }
 
-  toCoords(): number[] {
+  public toCoords(): number[] {
     return [this.x, this.y];
   }
 }

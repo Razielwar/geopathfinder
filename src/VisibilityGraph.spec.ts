@@ -5,13 +5,16 @@ import type { Feature, FeatureCollection, MultiPolygon, Point, Polygon, LineStri
 import { loadFeatureCollection } from '../test/geojsonUtils';
 import { VisibilityGraph } from './VisibilityGraph';
 
-type VisibilityGraphInput = {
+interface VisibilityGraphInput {
   start: Feature<Point>;
   restrictedAreas: Feature<Polygon | MultiPolygon>[];
   targets: Feature<Point>[];
-};
+}
 
-type ReadVisibilityGraphResult = { visibilityGraphInput: VisibilityGraphInput; featureCollection: FeatureCollection };
+interface ReadVisibilityGraphResult {
+  visibilityGraphInput: VisibilityGraphInput;
+  featureCollection: FeatureCollection;
+}
 
 function isStartPoint(feature: Feature): feature is Feature<Point> {
   return feature.properties?.['type'] === 'StartPoint' && feature.geometry.type === 'Point';
@@ -41,15 +44,15 @@ function readVisibilityGraphInputFromGeoJson(geojsonFilePath: string): ReadVisib
 }
 
 function buildFeatureCollectionFromVisibilityGraphData(visibilityGraph: VisibilityGraph): FeatureCollection {
-  // @ts-ignore
-  const start = turf.point(visibilityGraph.startPoint.toCoords());
+  // @ts-expect-error we need to access private members
+  const start = turf.point(visibilityGraph._startPoint.toCoords());
   start.properties = {
     type: 'StartPoint',
     'marker-color': '#041295',
   };
 
-  // @ts-ignore
-  const { points } = visibilityGraph;
+  // @ts-expect-error we need to access private members
+  const points = visibilityGraph._points;
   const pointFeatures = points.map((nodePoint) => {
     const point = turf.point(nodePoint.toCoords());
     let color = 'deepskyblue';
@@ -68,8 +71,8 @@ function buildFeatureCollectionFromVisibilityGraphData(visibilityGraph: Visibili
     return point;
   });
 
-  // @ts-ignore
-  const { edges } = visibilityGraph;
+  // @ts-expect-error we need to access private members
+  const edges = visibilityGraph._edges;
   const edgeFeatures = edges.map((edge) => {
     const line = turf.lineString([edge.p1.toCoords(), edge.p2.toCoords()]);
     line.properties = {
@@ -88,17 +91,16 @@ function buildFeatureCollectionFromProcessingVisibilityLines(
   visibilityGraph: VisibilityGraph,
   featureCollectionInput: FeatureCollection
 ): FeatureCollection {
-  // @ts-ignore
-  const { points } = visibilityGraph;
+  // @ts-expect-error we need to access private members
+  const points = visibilityGraph._points;
   const visibilityLineFeatures: Feature<LineString>[] = [];
 
   const visited = [];
-  for (let i = 0; i < points.length; i++) {
-    const currentPoint = points[i]!;
+  for (const currentPoint of points) {
     if (!currentPoint.isConcave) {
       visited[currentPoint.id] = true;
-      // @ts-ignore
-      visibilityGraph.processPointChildren(currentPoint.id, visited).forEach((toPoint) => {
+      // @ts-expect-error we need to access private members
+      visibilityGraph._processPointChildren(currentPoint.id, visited).forEach((toPoint) => {
         const line = turf.lineString([currentPoint.toCoords(), toPoint.toCoords()]);
         line.properties = {
           type: 'VisibilityLine',

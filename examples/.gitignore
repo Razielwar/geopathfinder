@@ -13,6 +13,12 @@ report.pdf
 dist
 dist-test
 *.tgz
+bundle.js
+
+# YARN
+.yarn
+.yarnrc.yml
+yarn-error.log
 
 # Logs
 logs

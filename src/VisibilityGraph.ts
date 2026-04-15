@@ -72,10 +72,6 @@ export class VisibilityGraph {
     // Detect all concave points to avoid linking them, this is an optimisation of the visibility graph
     // to limit the number of points as they are useless
     this._points.forEach((point) => point.computeConcave());
-
-    console.info(
-      `visibilityGraph nbEdges=${this._edges.length} nbPoints=${this._points.length} nbConcave=${this._points.filter((p) => p.isConcave).length}`
-    );
   }
 
   /** *** Replaced by AStar ******* */
@@ -130,7 +126,6 @@ export class VisibilityGraph {
         this._searchDijkstraChildren(children, distanceMax, distanceMap, predecessors, currentPointId, unvisitedNodes);
       }
     }
-    console.info(`search end at iteration ${nbIteration}`);
     return this._buildPath(targetFound, predecessors);
   }
 
@@ -208,7 +203,6 @@ export class VisibilityGraph {
         this._processAStarChildren(distanceMap, heuristicMap, predecessors, unvisitedNodes, currentPointId, children, distanceMax);
       }
     }
-    console.info(`search end at iteration ${nbIteration}`);
     return this._buildPath(targetFound, predecessors);
   }
 

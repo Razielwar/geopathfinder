@@ -41,6 +41,7 @@
     "build": "yarn clean && tsc -p tsconfig.json && tsc -p tsconfig.esm.json",
     "build:test": "tsc --project tsconfig.test.json",
     "bench": "node benchmark/index.js",
+    "bench:pathfinding": "ts-node --project tsconfig.test.json benchmark/pathfinding.ts",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "lint": "eslint src",

@@ -7,7 +7,7 @@ on:
       - new/**
       - update/**
       - fix/**
-      - init
+      - dev
   pull_request:
     branches:
       - main

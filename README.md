@@ -96,8 +96,8 @@ const obstacles: Feature<Polygon>[] = [
 
 const graph = new VisibilityGraph(start, obstacles, targets);
 
-// Search for the shortest path with a maximum distance of 2000 km
-graph.searchAStar(2000).then((path) => {
+// Search for the shortest path with a maximum distance of 2 000 000 m (2000 km)
+graph.searchAStar(2_000_000).then((path) => {
   console.log(path);
 });
 ```
@@ -127,7 +127,7 @@ new VisibilityGraph(start, restrictedAreas, targets);
 
 **Parameters:**
 
-- `distanceMax` (number): Maximum search distance in kilometers. Search terminates early if all paths exceed this threshold.
+- `distanceMax` (number): Maximum search distance in **metres**. Search terminates early if all paths exceed this threshold.
 
 **Return Value:**
 
@@ -137,9 +137,15 @@ Returns a Promise that resolves to an array of coordinate pairs `[[lon, lat], ..
 
 ```typescript
 const graph = new VisibilityGraph(start, obstacles, targets);
-const path = await graph.searchAStar(2000);
+const path = await graph.searchAStar(2_000_000); // 2000 km in metres
 // path: [[0, 0], [5.1, 4.8], [10, 10]]
 ```
+
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+This project uses **OpenSpec** with Kilo Code to manage non-trivial changes. See [doc/OPENSPEC-GUIDE.md](doc/OPENSPEC-GUIDE.md) for the full workflow.
 
 ## Future Improvements
 

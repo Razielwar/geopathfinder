@@ -37,7 +37,7 @@ rules:
     - Include algorithm complexity in O-notation where relevant
     - Reference source file and line number for existing decisions (e.g. VisibilityGraph.ts:113)
     - For each decision state the alternative considered and why it was rejected
-    - Risks section format: [Risk description] → Mitigation
+    - 'Risks section format: [Risk description] -> Mitigation'
   specs:
     - Use SHALL/MUST for normative requirements; avoid should/may
     - Each Requirement MUST have at least one Scenario

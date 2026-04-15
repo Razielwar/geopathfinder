@@ -230,7 +230,7 @@ describe('Geometry utils Tests', () => {
         [1e-7, 1e-7],
       ],
     ])('Verify distance with turf compute from %p to %p', (p: number[], q: number[]) => {
-      const turfComputedDistance = turf.distance(turf.point(p), turf.point(q), { units: 'kilometers' });
+      const turfComputedDistance = turf.distance(turf.point(p), turf.point(q), { units: 'meters' });
       expect(haversineDistance(point(p), point(q))).toBeCloseTo(turfComputedDistance, 1e-5); // cm precision
     });
   });

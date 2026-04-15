@@ -1,5 +1,5 @@
-import { earthRadius } from '@turf/turf';
 import type { NodePoint } from '../model/NodePoint';
+import { EARTH_RADIUS_METERS } from './constants';
 
 /**
  * Given three collinear points p, q, r, the function checks if
@@ -26,14 +26,14 @@ export function orientation(p: NodePoint, q: NodePoint, r: NodePoint) {
 }
 
 const DEGREES_TO_RAD = Math.PI / 180;
-const EARTH_RADIUS_KM = earthRadius / 1000; // Earth's radius in kilometers
 
 /**
- * Compute the distance in kilometers between two points ab using haversineDistance formula
+ * Compute the distance in metres between two points using the haversine formula.
  * @see https://en.wikipedia.org/wiki/Haversine_formula
  * @see https://www.movable-type.co.uk/scripts/latlong.html
  * @param a first point
  * @param b second point
+ * @returns distance in metres
  */
 export function haversineDistance(a: NodePoint, b: NodePoint): number {
   const dLat = (b.y - a.y) * DEGREES_TO_RAD;
@@ -46,7 +46,7 @@ export function haversineDistance(a: NodePoint, b: NodePoint): number {
   const l = sinDLat * sinDLat + sinDLon * sinDLon * Math.cos(lat1) * Math.cos(lat2);
   const c = 2 * Math.atan2(Math.sqrt(l), Math.sqrt(1 - l));
 
-  return EARTH_RADIUS_KM * c;
+  return EARTH_RADIUS_METERS * c;
 }
 
 /**

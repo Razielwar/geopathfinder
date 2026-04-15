@@ -86,7 +86,7 @@ export class VisibilityGraph {
    *  they are quicker than object, Set and Map
    *  - flatqueue is used for priority queue, we can improve using heapify or changing collection inside it
    *  but it means we have to know the length in advance as this quicker solution does not allow capacity growing
-   * @param distanceMax
+   * @param distanceMax maximum search distance in metres
    */
   public async searchDijkstra(distanceMax: number): Promise<number[][]> {
     // init
@@ -163,7 +163,7 @@ export class VisibilityGraph {
    *  they are quicker than object, Set and Map
    *  - flatqueue is used for priority queue, we can improve using heapify or changing collection inside it
    *  but it means we have to know the length in advance as this quicker solution does not allow capacity growing
-   * @param distanceMax
+   * @param distanceMax maximum search distance in metres
    */
   public async searchAStar(distanceMax: number): Promise<number[][]> {
     // init

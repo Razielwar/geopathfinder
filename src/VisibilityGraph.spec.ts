@@ -198,13 +198,13 @@ describe('VisibilityGraph Test', () => {
      * should get the startPoint, the targets, extract the edges from the polygons and identify concave points
      */
     it.each([
-      ['Simple graph short with only one target', 'simple', 100],
-      ['Simple graph multi polygon', 'simple-multi-polygon', 100],
-      ['Simple graph multi target', 'simple-multi-target', 100],
-      ['Complex graph short with only one target', 'complex', 100],
+      ['Simple graph short with only one target', 'simple', 100_000],
+      ['Simple graph multi polygon', 'simple-multi-polygon', 100_000],
+      ['Simple graph multi target', 'simple-multi-target', 100_000],
+      ['Complex graph short with only one target', 'complex', 100_000],
     ])(
       'Calling search should return optimal path to target - %s',
-      async (description: string, folderPath: string, distanceMaxKm: number) => {
+      async (description: string, folderPath: string, distanceMaxM: number) => {
         const { visibilityGraphInput, featureCollection } = readVisibilityGraphInputFromGeoJson(
           `test/visibilityGraph/${folderPath}/visibility-graph-input.geojson`
         );
@@ -213,7 +213,7 @@ describe('VisibilityGraph Test', () => {
           visibilityGraphInput.restrictedAreas,
           visibilityGraphInput.targets
         );
-        const pathLine = await buildSearchGeojsonResult(visibilityGraph, distanceMaxKm, isDijkstra);
+        const pathLine = await buildSearchGeojsonResult(visibilityGraph, distanceMaxM, isDijkstra);
         expect(pathLine).not.toBeNull();
         if (pathLine !== null) {
           featureCollection.features.push(pathLine);
@@ -223,20 +223,20 @@ describe('VisibilityGraph Test', () => {
             `test/visibilityGraph/${folderPath}/visibility-graph-optimal-path-expected.geojson`
           );
           expect(featureCollection).toEqual(visibilityGraphResultExpected);
-          const pathDistance = turf.length(pathLine, { units: 'kilometers' });
-          expect(pathDistance).toBeLessThanOrEqual(distanceMaxKm);
+          const pathDistance = turf.length(pathLine, { units: 'meters' });
+          expect(pathDistance).toBeLessThanOrEqual(distanceMaxM);
         }
       }
     );
 
     it.each([
-      ['Simple graph short with only one target', 'simple', 10],
-      ['Simple graph multi polygon', 'simple-multi-polygon', 10],
-      ['Simple graph multi target', 'simple-multi-target', 10],
-      ['Complex graph short with only one target', 'complex', 10],
+      ['Simple graph short with only one target', 'simple', 10_000],
+      ['Simple graph multi polygon', 'simple-multi-polygon', 10_000],
+      ['Simple graph multi target', 'simple-multi-target', 10_000],
+      ['Complex graph short with only one target', 'complex', 10_000],
     ])(
       'Calling search should return empty path if no path found in distanceMax - %s',
-      async (description, folderPath, distanceMaxKm: number) => {
+      async (description, folderPath, distanceMaxM: number) => {
         const { visibilityGraphInput } = readVisibilityGraphInputFromGeoJson(
           `test/visibilityGraph/${folderPath}/visibility-graph-input.geojson`
         );
@@ -245,7 +245,7 @@ describe('VisibilityGraph Test', () => {
           visibilityGraphInput.restrictedAreas,
           visibilityGraphInput.targets
         );
-        const pathLine = await buildSearchGeojsonResult(visibilityGraph, distanceMaxKm, isDijkstra);
+        const pathLine = await buildSearchGeojsonResult(visibilityGraph, distanceMaxM, isDijkstra);
         expect(pathLine).toBeNull();
       }
     );

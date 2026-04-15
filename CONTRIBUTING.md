@@ -34,6 +34,8 @@ yarn test
 
 At this point, you're ready to make your changes! Feel free to ask for help; everyone is a beginner at first :smile_cat:
 
+For non-trivial changes (new features, refactoring, dependency changes, or any change where the "why" and "how" are not obvious), this project uses **OpenSpec** with Kilo Code to structure the work. The workflow generates a proposal, design, specs, and task list before any code is written. See [doc/OPENSPEC-GUIDE.md](doc/OPENSPEC-GUIDE.md) for the full step-by-step guide including prompt templates and a real-world walkthrough.
+
 ### Make a Pull Request
 
 At this point, you should switch back to your master branch and make sure it's up to date with GeoPathFinder's master branch:
@@ -64,13 +66,14 @@ To learn more about rebasing and merging, check out this guide on [merging vs. r
 
 To maintain the quality of the project, we have a set of acceptance criteria for all contributions.
 
-*   **100% Code Coverage:** All new code should be fully tested to ensure we maintain 100% code coverage.
-*   **Regression Tests:** When fixing a bug, a corresponding test case must be added to prevent regressions.
-*   **Coding Style:** Code must adhere to the project's coding style, enforced by Prettier and ESLint. You can run `yarn format` and `yarn lint` to check your code.
-*   **Clear Documentation:** New features should be clearly documented. Code comments should be used where necessary to explain complex logic.
-*   **Conventional Commit Messages:** Commit messages should follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. This helps in generating automated changelogs and understanding the history of the project.
-*   **Passing Tests:** All existing tests must pass.
-*   **No Performance Degradation:** Changes should not negatively impact the performance of the library. If possible, include benchmarks for performance-sensitive changes.
+- **100% Code Coverage:** All new code should be fully tested to ensure we maintain 100% code coverage.
+- **Regression Tests:** When fixing a bug, a corresponding test case must be added to prevent regressions.
+- **Coding Style:** Code must adhere to the project's coding style, enforced by Prettier and ESLint. You can run `yarn format` and `yarn lint` to check your code.
+- **Clear Documentation:** New features should be clearly documented. Code comments should be used where necessary to explain complex logic.
+- **Conventional Commit Messages:** Commit messages should follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification. This helps in generating automated changelogs and understanding the history of the project.
+- **Passing Tests:** All existing tests must pass.
+- **No Performance Degradation:** Changes should not negatively impact the performance of the library. If possible, include benchmarks for performance-sensitive changes.
+
 ## Coding Style
 
 Please follow the coding style of the project. We use [Prettier](https://prettier.io/) and [ESLint](https://eslint.org/) to enforce a consistent style. You can run the following commands to format and lint your code:
@@ -78,3 +81,4 @@ Please follow the coding style of the project. We use [Prettier](https://prettie
 ```bash
 yarn format
 yarn lint
+```

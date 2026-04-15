@@ -125,7 +125,6 @@ async function buildSearchGeojsonResult(
   if (path.length >= 2) {
     const line = turf.lineString(path);
     line.properties = {
-      type: 'Contingency',
       stroke: 'deeppink',
     };
 

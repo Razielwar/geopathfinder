@@ -9,9 +9,9 @@ function isPolygon(feature: Feature<Polygon | MultiPolygon>): feature is Feature
 }
 
 /**
- * Processing contingency is a very long processing that might block Node event loop for a long time. This
+ * Processing path planning is a very long processing that might block Node event loop for a long time. This
  *  induce major problems (no more I/O, no response from service API, etc). To avoid that we should force periodically
- *  contingency process to 'yield' current process to leave other event time to run.
+ *  path planning process to 'yield' current process to leave other event time to run.
  *
  *  Nota : each calls to this methods (with await) force node eventloop to complete a event loop cycle before to continue
  *  processing. It should be done frequently enough to ensure service is not block for a too long time but not too often
@@ -111,7 +111,7 @@ export class VisibilityGraph {
       // nota : use module === 1 instand of 0 to ensure at each new search process is yield. These ensure that even
       // if we have a chain of search with less than 10 iteration process is yield regulary.
       if (nbIteration % 10 === 1) {
-        await waitNextEventloopCycle(); // contingency processing should be sequentially so await in loop is ok
+        await waitNextEventloopCycle(); // processing should be sequentially so await in loop is ok
       }
 
       // ignore duplicate as it is possible to add multiple time the same node in the queue
@@ -189,7 +189,7 @@ export class VisibilityGraph {
       // nota : use module === 1 instand of 0 to ensure at each new search process is yield. These ensure that even
       // if we have a chain of search with less than 10 iteration process is yield regulary.
       if (nbIteration % 10 === 1) {
-        await waitNextEventloopCycle(); // contingency processing should be sequentially so await in loop is ok
+        await waitNextEventloopCycle(); // processing should be sequentially so await in loop is ok
       }
 
       // ignore duplicate as it is possible to add multiple time the same node in the queue

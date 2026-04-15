@@ -86,7 +86,6 @@
     {
       "type": "Feature",
       "properties": {
-        "type": "Contingency",
         "stroke": "deeppink"
       },
       "geometry": {

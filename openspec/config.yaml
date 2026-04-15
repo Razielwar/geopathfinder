@@ -1,0 +1,50 @@
+schema: spec-driven
+
+context: |
+  TypeScript library for geodesic-aware pathfinding using visibility graphs.
+
+  Tech stack: TypeScript strict mode, Node >=24.13.1, Yarn >=4.13.0
+  Build outputs: CJS (dist/cjs), ESM (dist/esm), type declarations (dist/types)
+  Testing: Jest, 100% coverage threshold (branches/functions/lines/statements)
+  Commit convention: Conventional Commits (feat/fix/chore/docs/refactor/perf/test)
+  Version bumps: semantic-release driven by commit type on main branch
+
+  Domain:
+  - Input:  GeoJSON Feature<Point> (start & targets), Feature<Polygon|MultiPolygon>[] (obstacles)
+  - Output: number[][] — array of [longitude, latitude] pairs ordered start→target
+  - Coordinates: WGS84, [longitude, latitude] order
+  - Distance unit: kilometres throughout (haversine, distanceMax parameter)
+
+  Key design decisions (see design.md for rationale):
+  - Lazy visibility graph — edges built on-demand during search, not pre-computed
+  - Concave vertex filtering — inward polygon corners excluded from candidate edges
+  - A* primary algorithm with haversine heuristic; Dijkstra kept as baseline
+  - Event-loop yielding every 10 iterations via setTimeout(0)
+  - Clockwise polygon normalisation required before geometry operations
+
+  Known limitations (do not silently work around — propose a change):
+  - Longitude ±180 / latitude ±90 wrapping not handled
+  - Polygon inner rings (holes) not supported
+  - No unreachable-target pre-flight check
+  - FlatQueue vendored locally (ESM import issue with upstream)
+
+rules:
+  proposal:
+    - Keep Why to 1-2 sentences; focus on problem and timing
+    - List capabilities in kebab-case matching the specs/ folder names
+    - Mark breaking API changes explicitly with BREAKING
+  design:
+    - Include algorithm complexity in O-notation where relevant
+    - Reference source file and line number for existing decisions (e.g. VisibilityGraph.ts:113)
+    - For each decision state the alternative considered and why it was rejected
+    - Risks section format: [Risk description] → Mitigation
+  specs:
+    - Use SHALL/MUST for normative requirements; avoid should/may
+    - Each Requirement MUST have at least one Scenario
+    - Scenarios use WHEN/THEN format
+    - Scenario headers MUST use exactly 4 hashtags (####)
+    - Include boundary and error-case scenarios alongside happy-path
+  tasks:
+    - Tasks must be completable in a single coding session
+    - Each task should map to one or more spec requirements
+    - Mark already-complete baseline tasks with [x] at creation time

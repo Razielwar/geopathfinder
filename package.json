@@ -1,6 +1,6 @@
 {
   "name": "geopathfinder",
-  "version": "0.1.0",
+  "version": "0.0.0-development",
   "packageManager": "yarn@4.13.0",
   "description": "Geodesic-aware visibility graph implementation to support shortest path calculations on multi destination",
   "license": "MIT",

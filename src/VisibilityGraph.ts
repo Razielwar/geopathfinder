@@ -3,6 +3,8 @@ import { FlatQueue } from './utils/FlatQueue';
 import { NodePoint } from './model/NodePoint';
 import { Edge } from './model/Edge';
 import { areTangent, edgeIntersect, haversineDistance, makePolygonClockwise } from './utils/geometryUtils';
+import type { LonLat, SearchOptions } from './types';
+import { DefaultSearchOptions, SHORTEST_PATH_ALGORITHMS } from './types';
 
 function isPolygon(feature: Feature<Polygon | MultiPolygon>): feature is Feature<Polygon> {
   return feature.geometry.type === 'Polygon';
@@ -74,6 +76,15 @@ export class VisibilityGraph {
     this._points.forEach((point) => point.computeConcave());
   }
 
+  public async search(distanceMax: number, options?: SearchOptions): Promise<LonLat[]> {
+    const searchOptions = { ...DefaultSearchOptions, ...options };
+    const algorithm = searchOptions.shortestPathAlgorithm;
+    if (algorithm === SHORTEST_PATH_ALGORITHMS.DIJKSTRA) {
+      return this._searchDijkstra(distanceMax);
+    }
+    return this._searchAStar(distanceMax);
+  }
+
   /** *** Replaced by AStar ******* */
   /**
    * Search path to a target using dijkstra algorithm
@@ -84,7 +95,7 @@ export class VisibilityGraph {
    *  but it means we have to know the length in advance as this quicker solution does not allow capacity growing
    * @param distanceMax maximum search distance in metres
    */
-  public async searchDijkstra(distanceMax: number): Promise<number[][]> {
+  private async _searchDijkstra(distanceMax: number): Promise<LonLat[]> {
     // init
     const distanceMap: number[] = [];
     const predecessors: number[] = [];
@@ -160,7 +171,7 @@ export class VisibilityGraph {
    *  but it means we have to know the length in advance as this quicker solution does not allow capacity growing
    * @param distanceMax maximum search distance in metres
    */
-  public async searchAStar(distanceMax: number): Promise<number[][]> {
+  private async _searchAStar(distanceMax: number): Promise<LonLat[]> {
     // init
     const distanceMap: number[] = [];
     const heuristicMap: number[] = [];
@@ -257,8 +268,8 @@ export class VisibilityGraph {
     return childHeuristic;
   }
 
-  private _buildPath(targetFound: number | undefined, predecessors: number[]): number[][] {
-    const path: number[][] = [];
+  private _buildPath(targetFound: number | undefined, predecessors: number[]): LonLat[] {
+    const path: LonLat[] = [];
     if (targetFound !== undefined) {
       path.push(this._points[targetFound]!.toCoords());
       let currentNode = targetFound;

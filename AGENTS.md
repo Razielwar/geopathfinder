@@ -40,6 +40,11 @@
 - **Timeout** is 15 seconds per test
 - **Test setup** requires building with `yarn build:test` before running profiling/benchmark tools
 
+## Coverage Rules
+
+- **100% coverage is MANDATORY** to finalize any change. Never mark a change as complete if coverage drops below 100%.
+- **@istanbul ignore** comments are **FORBIDDEN**. Use proper test cases instead of ignoring coverage.
+
 ## TypeScript & Linting
 
 - **Strict mode** enabled; `noImplicitReturns`, `noUncheckedIndexedAccess`, `noImplicitOverride`, `noPropertyAccessFromIndexSignature` all enforced

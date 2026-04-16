@@ -2,6 +2,7 @@ import * as turf from '@turf/turf';
 import type { Feature, FeatureCollection, LineString, MultiPolygon, Point, Polygon } from 'geojson';
 import { loadFeatureCollection, saveFeatureCollection } from './geojsonUtils';
 import { VisibilityGraph } from '../src/VisibilityGraph';
+import { SHORTEST_PATH_ALGORITHMS } from '../src/types';
 
 export interface VisibilityGraphInput {
   start: Feature<Point>;
@@ -90,7 +91,9 @@ export async function buildSearchGeojsonResult(
   distanceMax: number,
   isDijkstra: boolean
 ): Promise<Feature<LineString> | null> {
-  const path = isDijkstra ? await visibilityGraph.searchDijkstra(distanceMax) : await visibilityGraph.searchAStar(distanceMax);
+  const path = await visibilityGraph.search(distanceMax, {
+    shortestPathAlgorithm: isDijkstra ? SHORTEST_PATH_ALGORITHMS.DIJKSTRA : SHORTEST_PATH_ALGORITHMS.A_STAR,
+  });
 
   if (path.length >= 2) {
     const line = turf.lineString(path);

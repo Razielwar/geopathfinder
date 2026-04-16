@@ -67,6 +67,19 @@ describe('VisibilityGraph Test', () => {
     });
   });
 
+  it('Calling search with default options should return optimal path', async () => {
+    const { visibilityGraphInput } = readVisibilityGraphInputFromGeoJson(`test/visibilityGraph/simple/visibility-graph-input.geojson`);
+    const visibilityGraph = new VisibilityGraph(
+      visibilityGraphInput.start,
+      visibilityGraphInput.restrictedAreas,
+      visibilityGraphInput.targets
+    );
+    const path = await visibilityGraph.search(100_000);
+    expect(path.length).toBeGreaterThan(0);
+    const pathDistance = turf.length(turf.lineString(path), { units: 'meters' });
+    expect(pathDistance).toBeLessThanOrEqual(100_000);
+  });
+
   describe.each([
     ['Dijkstra', true],
     ['AStar', false],

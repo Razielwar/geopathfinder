@@ -15,7 +15,7 @@ async function runProfilingIterations(targetDurationMs: number = 2000): Promise<
 
   while (Date.now() - startTime < targetDurationMs) {
     const vg = new VisibilityGraph(visibilityGraphInput.start, visibilityGraphInput.restrictedAreas, visibilityGraphInput.targets);
-    await vg.searchAStar(scenario.distanceMax);
+    await vg.search(scenario.distanceMax);
     totalIterations++;
   }
 

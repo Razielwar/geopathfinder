@@ -150,7 +150,7 @@ const obstacles: Feature<Polygon>[] = [
 const graph = new VisibilityGraph(start, obstacles, targets);
 
 // Search for the shortest path with a maximum distance of 2 000 000 m (2000 km)
-graph.searchAStar(2_000_000).then((path) => {
+graph.search(2_000_000).then((path) => {
   console.log(path);
 });
 ```
@@ -173,25 +173,42 @@ new VisibilityGraph(start, restrictedAreas, targets);
 
 **Methods:**
 
-| Method                        | Returns               | Description                                            |
-| ----------------------------- | --------------------- | ------------------------------------------------------ |
-| `searchAStar(distanceMax)`    | `Promise<number[][]>` | Find shortest path using A\* algorithm                 |
-| `searchDijkstra(distanceMax)` | `Promise<number[][]>` | Find shortest path using Dijkstra's algorithm (legacy) |
+| Method                          | Returns             | Description                                    |
+| ------------------------------- | ------------------- | ---------------------------------------------- |
+| `search(distanceMax, options?)` | `Promise<LonLat[]>` | Find shortest path with configurable algorithm |
 
 **Parameters:**
 
 - `distanceMax` (number): Maximum search distance in **metres**. Search terminates early if all paths exceed this threshold.
+- `options` (SearchOptions, optional): Configuration options for the search algorithm.
+
+**SearchOptions:**
+
+| Property                | Type                 | Default | Description                      |
+| ----------------------- | -------------------- | ------- | -------------------------------- |
+| `shortestPathAlgorithm` | `'a*' \| 'dijkstra'` | `'a*'`  | Algorithm to use for pathfinding |
 
 **Return Value:**
 
 Returns a Promise that resolves to an array of coordinate pairs `[[lon, lat], ...]` representing the path from start to target. Returns `[]` if no path is found within distanceMax.
 
-**Example:**
+**Examples:**
 
 ```typescript
+// Default A* search (recommended for most cases)
 const graph = new VisibilityGraph(start, obstacles, targets);
-const path = await graph.searchAStar(2_000_000); // 2000 km in metres
+const path = await graph.search(2_000_000); // 2000 km in metres
 // path: [[0, 0], [5.1, 4.8], [10, 10]]
+
+// Explicit A* algorithm
+const pathAStar = await graph.search(2_000_000, {
+  shortestPathAlgorithm: 'a*',
+});
+
+// Dijkstra algorithm (exhaustive baseline for benchmarking)
+const pathDijkstra = await graph.search(2_000_000, {
+  shortestPathAlgorithm: 'dijkstra',
+});
 ```
 
 ## Contributing

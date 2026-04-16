@@ -1,5 +1,6 @@
 import { readVisibilityGraphInputFromGeoJson } from '../test/visibilityGraphUtils';
 import { VisibilityGraph } from '../src/VisibilityGraph';
+import { SHORTEST_PATH_ALGORITHMS } from '../src/types';
 
 interface Scenario {
   name: string;
@@ -67,7 +68,7 @@ async function benchmarkAStarSearch(scenario: Scenario): Promise<void> {
 
   for (let i = 0; i < iterations; i++) {
     const vg = new VisibilityGraph(visibilityGraphInput.start, visibilityGraphInput.restrictedAreas, visibilityGraphInput.targets);
-    await vg.searchAStar(scenario.distanceMax);
+    await vg.search(scenario.distanceMax, { shortestPathAlgorithm: SHORTEST_PATH_ALGORITHMS.A_STAR });
   }
 
   const times: number[] = [];
@@ -75,7 +76,7 @@ async function benchmarkAStarSearch(scenario: Scenario): Promise<void> {
   for (let i = 0; i < iterations; i++) {
     const vg = new VisibilityGraph(visibilityGraphInput.start, visibilityGraphInput.restrictedAreas, visibilityGraphInput.targets);
     const start = performance.now();
-    await vg.searchAStar(scenario.distanceMax);
+    await vg.search(scenario.distanceMax, { shortestPathAlgorithm: SHORTEST_PATH_ALGORITHMS.A_STAR });
     const end = performance.now();
     times.push(end - start);
   }
@@ -96,7 +97,7 @@ async function benchmarkDijkstraSearch(scenario: Scenario): Promise<void> {
 
   for (let i = 0; i < iterations; i++) {
     const vg = new VisibilityGraph(visibilityGraphInput.start, visibilityGraphInput.restrictedAreas, visibilityGraphInput.targets);
-    await vg.searchDijkstra(scenario.distanceMax);
+    await vg.search(scenario.distanceMax, { shortestPathAlgorithm: SHORTEST_PATH_ALGORITHMS.DIJKSTRA });
   }
 
   const times: number[] = [];
@@ -104,7 +105,7 @@ async function benchmarkDijkstraSearch(scenario: Scenario): Promise<void> {
   for (let i = 0; i < iterations; i++) {
     const vg = new VisibilityGraph(visibilityGraphInput.start, visibilityGraphInput.restrictedAreas, visibilityGraphInput.targets);
     const start = performance.now();
-    await vg.searchDijkstra(scenario.distanceMax);
+    await vg.search(scenario.distanceMax, { shortestPathAlgorithm: SHORTEST_PATH_ALGORITHMS.DIJKSTRA });
     const end = performance.now();
     times.push(end - start);
   }

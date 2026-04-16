@@ -1,4 +1,5 @@
 import { isConcave } from '../utils/geometryUtils';
+import type { LonLat } from '../types';
 
 export class NodePoint {
   public readonly x: number;
@@ -20,7 +21,7 @@ export class NodePoint {
     this.isConcave = isConcave(this);
   }
 
-  public toCoords(): number[] {
+  public toCoords(): LonLat {
     return [this.x, this.y];
   }
 }

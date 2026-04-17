@@ -1,0 +1,7 @@
+[
+  { "id": "small", "label": "Small", "file": "scenarios/small.geojson" },
+  { "id": "medium", "label": "Medium", "file": "scenarios/medium.geojson" },
+  { "id": "large", "label": "Large", "file": "scenarios/large.geojson" },
+  { "id": "xlarge", "label": "XLarge", "file": "scenarios/xlarge.geojson" },
+  { "id": "xxlarge", "label": "XXLarge", "file": "scenarios/xxlarge.geojson" }
+]

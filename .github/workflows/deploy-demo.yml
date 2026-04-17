@@ -1,0 +1,42 @@
+name: Deploy Demo to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Node.js with cache
+        uses: ./.github/actions/setup-node-with-cache
+
+      - name: Install demo dependencies
+        run: yarn install --frozen-lockfile
+        working-directory: demo
+
+      - name: Build demo
+        run: yarn build
+        working-directory: demo
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

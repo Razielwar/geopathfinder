@@ -11,6 +11,10 @@ GeoPathFinder is a **TypeScript library for geodesic-aware pathfinding using vis
 - Avoids polygonal obstacles (restricted areas)
 - Returns shortest paths using geodesic distance calculations
 
+## Demo
+
+An interactive demo is hosted at **https://razielwar.github.io/geopathfinder/** — draw a start point, targets, and polygon obstacles on the map, then run the pathfinder and see the computed path overlaid in real time.
+
 ## Key Innovation
 
 Unlike traditional visibility graph implementations that pre-compute the entire graph, GeoPathFinder uses **lazy evaluation**: the visibility graph is built step-by-step during the search process, only generating visibility edges when needed. This approach dramatically improves performance by avoiding wasted computation.

@@ -208,6 +208,17 @@ If `graph.search(...)` throws an error, the demo SHALL catch it, display a user-
 
 ---
 
+### Requirement: Auto-zoom on scenario load
+
+When a named scenario is loaded, the map SHALL automatically pan and zoom to fit all features of that scenario within the viewport. The fit SHALL use `map.fitBounds()` with a small padding so features are not clipped at the edges.
+
+#### Scenario: Map zooms to loaded scenario
+
+- **WHEN** the user selects a named scenario and clicks "Load Scenario"
+- **THEN** the map automatically adjusts its centre and zoom level so all scenario features (start point, targets, obstacles) are visible within the viewport
+
+---
+
 ### Requirement: Clear button
 
 The demo SHALL provide a "Clear" button that removes all drawn features (start, targets, obstacles) and the result path from the map, clears the result panel, and resets the scenario dropdown to "Custom".
